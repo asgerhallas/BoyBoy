@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using FakeItEasy;
 using Shouldly;
 using Xunit;
@@ -115,6 +116,17 @@ namespace FakeItEasyEx.Tests
             Fake.GetFakeManager(fake.Function(1)).ShouldNotBe(null);
         }
 
+        [Fact]
+        public void GetPreviousReturnValueByType()
+        {
+            var fake = A.Fake<IInterface>();
+
+            var returnValue = fake.Function(0);
+
+            Fake.GetCalls(fake).Single().ReturnValue.ShouldBe(returnValue);
+
+            //fake.ReturnValue<object>().ShouldBe(1);
+        }
 
         public interface IInterface
         {

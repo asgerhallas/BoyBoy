@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using FakeItEasy;
 using FakeItEasy.Configuration;
 using FakeItEasy.Core;
@@ -11,6 +12,12 @@ namespace FakeItEasyEx
 {
     public static class FakeEx
     {
+        public static T ReturnValue<T>(this object fake) =>
+        (
+            Fake.GetCalls(fake).Select(y => y.ReturnValue).OfType<T>().Select(x => new { x }).SingleOrDefault() ??
+            Fake.GetCalls(fake).Select(y => y.ReturnValue).OfType<Task<T>>().Select(x => new { x = x.Result }).Single()
+        ).x;
+
         public static object Call(this object fake, string methodName, Action<Asserter> expect) =>
             ExpectCall(fake, (Action<Asserter>)(x =>
             {
