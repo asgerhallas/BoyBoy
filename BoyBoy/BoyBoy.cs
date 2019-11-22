@@ -8,9 +8,9 @@ using FakeItEasy.Configuration;
 using FakeItEasy.Core;
 using OneOf;
 
-namespace FakeItEasyEx
+namespace BoyBoy
 {
-    public static class FakeEx
+    public static class BoyBoy
     {
         public static T ReturnValue<T>(this object fake) =>
         (
@@ -90,7 +90,7 @@ namespace FakeItEasyEx
 
             public bool IsApplicableTo(IFakeObjectCall fakeObjectCall)
             {
-                if (fakeObjectCall.Method.DeclaringType == typeof(FakeEx)) return false;
+                if (fakeObjectCall.Method.DeclaringType == typeof(BoyBoy)) return false;
 
                 if (ActualCalls.Contains(fakeObjectCall)) return false;
 

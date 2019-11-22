@@ -1,13 +1,10 @@
-using System;
-using System.Linq;
 using FakeItEasy;
 using Shouldly;
 using Xunit;
-using FakeItEasyEx;
 
-namespace FakeItEasyEx.Tests
+namespace BoyBoy.Tests
 {
-    public class FakeExTests
+    public class BoyBoyTests
     {
         [Fact]
         public void AssertsVoidFunction()
@@ -123,9 +120,7 @@ namespace FakeItEasyEx.Tests
 
             var returnValue = fake.Function(0);
 
-            Fake.GetCalls(fake).Single().ReturnValue.ShouldBe(returnValue);
-
-            //fake.ReturnValue<object>().ShouldBe(1);
+            fake.ReturnValue<object>().ShouldBe(returnValue);
         }
 
         public interface IInterface

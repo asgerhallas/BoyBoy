@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FakeItEasyEx\FakeItEasyEx.csproj" />
+    <ProjectReference Include="..\BoyBoy\BoyBoy.csproj" />
   </ItemGroup>
 
 </Project>

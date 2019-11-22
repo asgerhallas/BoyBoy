@@ -12,7 +12,7 @@ before_build:
 build:
   verbosity: minimal
 after_build:
-- cmd: dotnet pack FakeItEasyEx\FakeItEasyEx.csproj /p:PackageVersion=%APPVEYOR_BUILD_VERSION%
+- cmd: dotnet pack BoyBoy\BoyBoy.csproj /p:PackageVersion=%APPVEYOR_BUILD_VERSION%
 artifacts:
 - path: '*/**/*.nupkg'
 # deploy:
