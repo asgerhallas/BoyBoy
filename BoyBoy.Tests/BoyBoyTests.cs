@@ -1,3 +1,4 @@
+using BoyBoyFiles;
 using FakeItEasy;
 using Shouldly;
 using Xunit;
@@ -7,125 +8,43 @@ namespace BoyBoy.Tests
     public class BoyBoyTests
     {
         [Fact]
-        public void AssertsVoidFunction()
+        public void CallFunction_AssertionFails()
         {
-            var fake = A.Fake<IInterface>();
+            var fake = A.Fake<ITheInterface>();
 
-            fake.Call(x => x.Argument<int>(1).ShouldBe(1));
+            fake.Call_VoidFunction(x => x.ShouldBe(2));
 
-            Should.Throw<ShouldAssertException>(() => fake.VoidFunction(0));
+            Should.Throw<ShouldAssertException>(() => fake.MyFunction(1, "test", A.Fake<OldBoyBoyTests.IInterface>()));
         }
 
         [Fact]
-        public void AssertsMultipleVoidFunctions()
+        public void CallFunction_ReturnValue()
         {
-            var fake = A.Fake<IInterface>();
+            var fake = A.Fake<ITheInterface>();
 
-            fake.Call(x => x.Argument<int>(1).ShouldBe(1))
-                .Call(x => x.Argument<int>(1).ShouldBe(2));
+            fake.Call_MyFunction((x, y, z) => $"hallo{y}");
 
-            fake.VoidFunction(1);
+            var result = fake.MyFunction(1, "test", A.Fake<OldBoyBoyTests.IInterface>());
 
-            Should.Throw<ShouldAssertException>(() => fake.VoidFunction(3));
+            result.ShouldBe("hallotest");
         }
 
         [Fact]
-        public void AssertsMultipleVoidFunctions2()
+        public void CallFunction_NestedInterface_ReturnValue()
         {
-            var fake = A.Fake<IInterface>();
+            var fake = A.Fake<ITheNestedInterface>();
 
-            fake.Call(x => x.Argument<int>(1).ShouldBe(1))
-                .Call(x => x.Argument<int>(1).ShouldBe(2));
+            fake.Call_Functionit(x => $"hallo{x}");
 
-            fake.VoidFunction(1);
+            var result = fake.Functionit(1);
 
-            Should.NotThrow(() => fake.VoidFunction(2));
+            result.ShouldBe("hallo1");
         }
 
-        [Fact]
-        public void AssertMissingCalls()
+        [BoyBoy]
+        public interface ITheNestedInterface
         {
-            var fake = A.Fake<IInterface>();
-
-            fake.Call(x => x.Argument<int>(1).ShouldBe(1))
-                .Call(x => x.Argument<int>(1).ShouldBe(2));
-
-            fake.VoidFunction(1);
-
-            Should.Throw<ExpectationException>(() => fake.AllCallsMustHaveHappened())
-                .Message.ShouldBe("Expected 2 calls to 'IInterface', but only 1 were made.");
-        }
-
-        [Fact]
-        public void AssertTooManyCalls()
-        {
-            var fake = A.Fake<IInterface>();
-
-            fake.Call(x => x.Argument<int>(1).ShouldBe(1));
-
-            fake.VoidFunction(1);
-
-            Should.Throw<ExpectationException>(() => fake.VoidFunction(1))
-                .Message.ShouldBe("Did not expect call number 2 to 'IInterface'.");
-        }
-
-        [Fact]
-        public void AssertFunction()
-        {
-            var fake = A.Fake<IInterface>();
-
-            fake.Call(x => x.Argument<int>(1).ShouldBe(1));
-
-            Should.Throw<ShouldAssertException>(() => fake.Function(2));
-        }
-
-        [Fact]
-        public void ReturnValueFromFunction()
-        {
-            var fake = A.Fake<IInterface>();
-
-            fake.Call(x => 2);
-
-            fake.Function(2).ShouldBe(2);
-        }
-
-        [Fact]
-        public void ReturnValueFromMultipleFunctions()
-        {
-            var fake = A.Fake<IInterface>();
-
-            fake.Call(x => 2)
-                .Call(x => 3)
-                .Call(x => x.Argument(1));
-
-            fake.Function(0).ShouldBe(2);
-            fake.Function(0).ShouldBe(3);
-            fake.Function(42).ShouldBe(42);
-        }
-
-        [Fact]
-        public void ReturnFakedValueFromFunction()
-        {
-            var fake = A.Fake<IInterface>();
-
-            fake.Call(x => x.Argument<int>(1).ShouldBe(1));
-
-            Fake.GetFakeManager(fake.Function(1)).ShouldNotBe(null);
-        }
-
-        [Fact]
-        public void GetPreviousReturnValueByType()
-        {
-            var fake = A.Fake<IInterface>();
-
-            var returnValue = fake.Function(0);
-
-            fake.ReturnValue<object>().ShouldBe(returnValue);
-        }
-
-        public interface IInterface
-        {
-            object Function(int number);
+            object Functionit(int number);
             void VoidFunction(int number);
         }
     }

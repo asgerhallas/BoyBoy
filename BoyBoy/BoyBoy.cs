@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using FakeItEasy;
 using FakeItEasy.Configuration;
 using FakeItEasy.Core;
@@ -82,9 +78,9 @@ namespace BoyBoy
         {
             public AssertCallRule(ExpectatedCall assert) => ExpectedCalls.Add(assert);
 
-            public List<ExpectatedCall> ExpectedCalls { get; } = new List<ExpectatedCall>();
+            public List<ExpectatedCall> ExpectedCalls { get; } = new();
 
-            public List<IFakeObjectCall> ActualCalls { get; } = new List<IFakeObjectCall>();
+            public List<IFakeObjectCall> ActualCalls { get; } = new();
 
             public void ExpectCall(ExpectatedCall expect) => ExpectedCalls.Add(expect);
 
