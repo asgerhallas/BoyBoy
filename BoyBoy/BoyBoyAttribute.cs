@@ -1,8 +1,5 @@
 ﻿namespace BoyBoy
 {
-    [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class)]
-    public class BoyBoyAttribute : Attribute
-    {
-
-    }
+    //[AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class)]
+    //public class BoyBoyAttribute : Attribute { }
 }

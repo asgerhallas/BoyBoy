@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Monkeymoto.GeneratorUtils;
 
 namespace BoyBoy
 {
@@ -14,16 +16,39 @@ namespace BoyBoy
                 //Debugger.Launch();
             }
 
-            var values = context.SyntaxProvider
-                .ForAttributeWithMetadataName(typeof(BoyBoyAttribute).FullName!, static (_, _) => true, Transform)
-                .Where(static m => m is not null)
+            var symbolTree = GenericSymbolReferenceTree.FromIncrementalGeneratorInitializationContext(context);
+
+            var symbolToFind = context.SyntaxProvider.CreateSyntaxProvider(
+                (x, _) => x is InvocationExpressionSyntax,
+                (x, _) => x.SemanticModel.GetSymbolInfo(x.Node).Symbol is IMethodSymbol { Name: "Fake" } method ? method : null);
+
+            //var symbolToFind = context.CompilationProvider.Select(static (compilation, _) =>
+            //{
+            //    return compilation.GetTypeByMetadataName("BoyBoy.BoyBoy")!;
+            //});
+
+            var symbols = symbolToFind
+                .Combine(symbolTree)
+                .SelectMany(static (x, cancellationToken) =>
+                {
+                    var (symbolToFind, symbolTree) = x;
+
+                    return symbolToFind != null
+                        ? symbolTree.GetBranchesBySymbol(symbolToFind, cancellationToken)
+                        : [];
+                })
                 .Collect();
 
-            context.RegisterSourceOutput(values,
+            //var values = context.SyntaxProvider
+            //    .ForAttributeWithMetadataName(typeof(BoyBoyAttribute).FullName!, static (_, _) => true, Transform)
+            //    .Where(static m => m is not null)
+            //    .Collect();
+
+            context.RegisterSourceOutput(symbols,
                 static (sourceProductionContext, source) => Execute(sourceProductionContext, source!));
         }
 
-        static void Execute(SourceProductionContext context, ImmutableArray<INamedTypeSymbol> source)
+        static void Execute(SourceProductionContext context, IEnumerable<GenericSymbolReference> source)
         {
             static string Show(ISymbol symbol) =>
                 symbol.ToDisplayString(new SymbolDisplayFormat(
@@ -33,7 +58,13 @@ namespace BoyBoy
                     miscellaneousOptions: SymbolDisplayMiscellaneousOptions.ExpandNullable
                 ));
 
-            foreach (var symbol in source)
+            var typeSymbols = source
+                .Select(x => x.TypeArguments[0])
+                .Distinct(SymbolEqualityComparer.Default)
+                .OfType<INamedTypeSymbol>()
+                .Where(x => x.TypeKind == TypeKind.Interface);
+
+            foreach (var symbol in typeSymbols)
             {
                 var output =
                     $$"""
@@ -45,10 +76,8 @@ namespace BoyBoy
                       {
                       """;
 
-                foreach (var member in symbol.GetMembers())
+                foreach (var method in symbol.GetMembers().OfType<IMethodSymbol>())
                 {
-                    if (member is not IMethodSymbol method) continue;
-
                     var parameters = method.Parameters;
 
                     var invokesOrReturns = method.ReturnsVoid ? "Invokes" : "ReturnsLazily";
@@ -63,7 +92,7 @@ namespace BoyBoy
                     output +=
                         $$"""
                           
-                             public static void Call_{{member.Name}}(this {{Show(symbol)}} self, {{actionOrFunc}} call) {
+                             public static void Call_{{method.Name}}(this {{Show(symbol)}} self, {{actionOrFunc}} call) {
                                  FakeItEasy.A.CallTo(self)
                                      {{maybeWithReturnType}}
                                      .WhenArgumentsMatch(collection => 
@@ -85,8 +114,5 @@ namespace BoyBoy
                 context.AddSource($"{symbol.Name}Ex.g.cs", output);
             }
         }
-
-        public INamedTypeSymbol? Transform(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken) =>
-            ctx.SemanticModel.GetDeclaredSymbol(ctx.TargetNode) as INamedTypeSymbol;
     }
 }

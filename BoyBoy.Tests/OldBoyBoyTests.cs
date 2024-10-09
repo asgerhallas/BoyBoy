@@ -126,7 +126,7 @@ namespace BoyBoy.Tests
             fake.ReturnValue<object>().ShouldBe(returnValue);
         }
 
-        [BoyBoy]
+        //[BoyBoy]
         public interface IInterface
         {
             object Functionit(int number);

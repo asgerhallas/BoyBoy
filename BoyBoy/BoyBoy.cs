@@ -8,6 +8,8 @@ namespace BoyBoy
 {
     public static class BoyBoy
     {
+        public static T CallTo<T>(T fake) => fake;
+
         public static T ReturnValue<T>(this object fake) =>
         (
             Fake.GetCalls(fake).Select(y => y.ReturnValue).OfType<T>().Select(x => new { x }).SingleOrDefault() ??
@@ -137,8 +139,8 @@ namespace BoyBoy
             public Asserter(IFakeObjectCall call) => this.call = call;
 
             public MethodInfo Method => call.Method;
-            public object Argument(int index) => call.Arguments.Get<object>(index - 1);
-            public T Argument<T>(int index) => call.Arguments.Get<T>(index - 1);
+            public object? Argument(int index) => call.Arguments.Get<object>(index - 1);
+            public T? Argument<T>(int index) => call.Arguments.Get<T>(index - 1);
             public ArgumentCollection Arguments => call.Arguments;
         }
     }

@@ -1,6 +1,6 @@
 namespace BoyBoy.Tests
 {
-    [BoyBoy]
+    //[BoyBoy]
     public interface ITheInterface
     {
         object MyFunction(int number, string test, OldBoyBoyTests.IInterface interfac);

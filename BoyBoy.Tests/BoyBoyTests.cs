@@ -1,3 +1,5 @@
+//using BoyBoyFiles;
+
 using BoyBoyFiles;
 using FakeItEasy;
 using Shouldly;
@@ -11,6 +13,8 @@ namespace BoyBoy.Tests
         public void CallFunction_AssertionFails()
         {
             var fake = A.Fake<ITheInterface>();
+
+            //BoyBoy.CallTo(fake);
 
             fake.Call_VoidFunction(x => x.ShouldBe(2));
 
@@ -35,13 +39,13 @@ namespace BoyBoy.Tests
             var fake = A.Fake<ITheNestedInterface>();
 
             fake.Call_Functionit(x => $"hallo{x}");
-
+            
             var result = fake.Functionit(1);
 
             result.ShouldBe("hallo1");
         }
 
-        [BoyBoy]
+        //[BoyBoy]
         public interface ITheNestedInterface
         {
             object Functionit(int number);
