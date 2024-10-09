@@ -18,7 +18,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
 		<PackageReference Include="Monkeymoto.GeneratorUtils.GenericSymbolReferenceTree" Version="2.0.0.1">
-			<PrivateAssets>all</PrivateAssets>
+			<!--<PrivateAssets>all</PrivateAssets>-->
 			<GeneratePathProperty>true</GeneratePathProperty>
 		</PackageReference>
 		<PackageReference Include="OneOf" Version="2.1.151" />
